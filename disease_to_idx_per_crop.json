@@ -1,0 +1,68 @@
+{
+  "apple": {
+    "apple scab": 0,
+    "black rot": 1,
+    "cedar apple rust": 2,
+    "healthy": 3
+  },
+  "blueberry": {
+    "healthy": 0
+  },
+  "cherry": {
+    "healthy": 0,
+    "powdery mildew": 1
+  },
+  "corn": {
+    "cercospora leaf spot gray leaf spot": 0,
+    "common rust": 1,
+    "healthy": 2,
+    "northern leaf blight": 3
+  },
+  "grape": {
+    "black rot": 0,
+    "esca (black measles)": 1,
+    "healthy": 2,
+    "leaf blight (isariopsis leaf spot)": 3
+  },
+  "orange": {
+    "haunglongbing (citrus greening)": 0
+  },
+  "peach": {
+    "bacterial spot": 0,
+    "healthy": 1
+  },
+  "pepper, bell": {
+    "bacterial spot": 0,
+    "healthy": 1
+  },
+  "potato": {
+    "early blight": 0,
+    "healthy": 1,
+    "late blight": 2
+  },
+  "raspberry": {
+    "healthy": 0
+  },
+  "soybean": {
+    "healthy": 0
+  },
+  "squash": {
+    "powdery mildew": 0
+  },
+  "strawberry": {
+    "healthy": 0,
+    "leaf scorch": 1
+  },
+  "tomato": {
+    "bacterial spot": 0,
+    "early blight": 1,
+    "healthy": 2,
+    "late blight": 3,
+    "leaf mold": 4,
+    "septoria leaf spot": 5,
+    "spider mites two-spotted spider mite": 6,
+    "target spot": 7,
+    "tomato mosaic virus": 8,
+    "tomato yellow leaf curl virus": 9
+  }
+}

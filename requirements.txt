@@ -1,0 +1,6 @@
+torch
+torchvision
+streamlit
+pandas
+scikit-learn
+pillow
