@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pandas as pd
 
-DATASET_ROOT = Path("data")  # <-- set this to your dataset folder
+DATASET_ROOT = Path("kaggle/input/datasets/vipoooool/new-plant-diseases-dataset/New Plant Diseases Dataset(Augmented)/New Plant Diseases Dataset(Augmented)/valid")  # <-- set this to your dataset folder
 IMG_EXTS = {".jpg", ".jpeg", ".png"}
 
 
