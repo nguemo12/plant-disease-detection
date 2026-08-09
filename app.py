@@ -19,7 +19,11 @@ CHECKPOINT_PATH = "best_model.pt"
 @st.cache_resource
 def load_model():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    ckpt = torch.load(CHECKPOINT_PATH, map_location=device)
+    # weights_only=False: required because the checkpoint stores plain
+    # Python dicts (crop_to_idx, disease_to_idx_per_crop) alongside the
+    # tensors. PyTorch >=2.6 defaults weights_only=True and will raise
+    # UnpicklingError otherwise. Only safe because we trust this file.
+    ckpt = torch.load(CHECKPOINT_PATH, map_location=device, weights_only=False)
     model = SharedBackboneMultiHead(ckpt["crop_to_idx"], ckpt["disease_to_idx_per_crop"]).to(device)
     model.load_state_dict(ckpt["model_state"])
     model.eval()
@@ -58,7 +62,11 @@ if uploaded is not None:
     st.image(image, caption="Uploaded image", use_container_width=True)
 
     transform = build_transform(train=False, img_size=img_size)
-    tensor = transform(image).to(device)
+    # unsqueeze(0): transform() returns (C, H, W); the model's conv/batchnorm
+    # layers expect a batch dim (B, C, H, W). Remove this line ONLY if
+    # model.predict() already adds the batch dim internally — check
+    # SharedBackboneMultiHead.predict()'s signature before deploying.
+    tensor = transform(image).unsqueeze(0).to(device)
 
     n_classes = len(model.disease_to_idx_per_crop[crop])
     with st.spinner("Running diagnosis..."):

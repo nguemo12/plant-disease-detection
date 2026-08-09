@@ -7,6 +7,7 @@ matrix per crop head, plus a summary table across crops.
 """
 
 import argparse
+import json
 from collections import defaultdict
 
 import torch
@@ -21,19 +22,35 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--index_csv", default="dataset_index.csv")
     parser.add_argument("--checkpoint", default="best_model.pt")
+    parser.add_argument("--crop_map", default="crop_to_idx.json")
+    parser.add_argument("--disease_map", default="disease_to_idx_per_crop.json")
+    parser.add_argument("--img_size", type=int, default=224)
+    parser.add_argument("--dataset_root", default=None,
+                         help="Local root replacing the CSV's Kaggle path prefix, "
+                              "e.g. 'kaggle/input/datasets/vipoooool/new-plant-diseases-dataset'")
     parser.add_argument("--split", default="test", choices=["val", "test"])
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--num_workers", type=int, default=4)
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    ckpt = torch.load(args.checkpoint, map_location=device)
 
-    model = SharedBackboneMultiHead(ckpt["crop_to_idx"], ckpt["disease_to_idx_per_crop"]).to(device)
-    model.load_state_dict(ckpt["model_state"])
+    # NOTE: this checkpoint is a raw state_dict (just weights, no metadata
+    # wrapper) -- so crop/disease maps and img_size come from the JSON
+    # files and --img_size instead of from the checkpoint itself.
+    with open(args.crop_map) as f:
+        crop_to_idx = json.load(f)
+    with open(args.disease_map) as f:
+        disease_to_idx_per_crop = json.load(f)
+
+    state_dict = torch.load(args.checkpoint, map_location=device)
+
+    model = SharedBackboneMultiHead(crop_to_idx, disease_to_idx_per_crop).to(device)
+    model.load_state_dict(state_dict)
     model.eval()
 
-    ds = PlantDiseaseDataset(args.index_csv, split=args.split, img_size=ckpt["img_size"])
+    ds = PlantDiseaseDataset(args.index_csv, split=args.split, img_size=args.img_size,
+                              dataset_root=args.dataset_root)
     loader = DataLoader(ds, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
 
     true_by_crop = defaultdict(list)
